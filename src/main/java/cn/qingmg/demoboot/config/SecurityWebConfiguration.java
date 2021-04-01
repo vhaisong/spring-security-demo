@@ -1,22 +1,47 @@
 package cn.qingmg.demoboot.config;
 
+import cn.qingmg.demoboot.service.UserLoginService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class SecurityWebConfiguration extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private UserLoginService userLoginService;
+
+    private PasswordEncoder passwordEncoder() {
+        DelegatingPasswordEncoder encoder = (DelegatingPasswordEncoder) PasswordEncoderFactories.createDelegatingPasswordEncoder();
+        encoder.setDefaultPasswordEncoderForMatches(NoOpPasswordEncoder.getInstance());
+        return encoder;
+    }
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth
-                // 存储在内存中
-                .inMemoryAuthentication()
-                // 创建用户 user1
-                .withUser("user1").password("{noop}123").authorities("admin")
+                .userDetailsService(userLoginService)
+                .passwordEncoder(passwordEncoder())
+        ;
+    }
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .authorizeRequests()
+                .antMatchers("/test/111").hasRole("test1")
+                .antMatchers("/test/222").hasRole("test2")
+                .antMatchers("/test/333").hasAuthority("ROLE_test3")
+                .antMatchers("/test/444").hasAuthority("ROLE_test4")
+                .anyRequest().authenticated()
                 .and()
-                // 创建用户 user2
-                .withUser("user2").password("{bcrypt}" + new BCryptPasswordEncoder().encode("123")).authorities("admin");
+                .formLogin()
+        ;
     }
 }
