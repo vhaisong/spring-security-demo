@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆页面</title>
+</head>
+<body>
+    <form action="/login" method="post">
+        账号： <input name="username" type="text" value="" /><br/>
+        密码： <input name="password" type="password" value="" /><br/>
+        验证码： <input name="code" type="text" value="" /><img src="/code" onclick="javascript:this.src=this.src+'?time='+Math.random()" /><br/>
+        <input type="submit" value="登陆" />
+    </form>
+</body>
+</html>
