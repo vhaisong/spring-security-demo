@@ -11,6 +11,9 @@ import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class SecurityWebConfiguration extends WebSecurityConfigurerAdapter {
@@ -57,8 +60,24 @@ public class SecurityWebConfiguration extends WebSecurityConfigurerAdapter {
                         resp.getWriter().print(e.getMessage());
                     })
                     .and()
+                .rememberMe()
+//                    .rememberMeParameter("rme")
+//                    .rememberMeCookieName("rmec")
+                    .tokenValiditySeconds(24 * 60 * 60)
+//                    .tokenRepository(jdbcTokenRepository())
+                    .and()
                 // 禁用 csrf
                 .csrf().disable()
         ;
+    }
+
+    @Autowired
+    private DataSource dataSource;
+
+    private JdbcTokenRepositoryImpl jdbcTokenRepository() {
+        JdbcTokenRepositoryImpl repository = new JdbcTokenRepositoryImpl();
+        repository.setDataSource(dataSource);
+        repository.setCreateTableOnStartup(true);
+        return repository;
     }
 }
