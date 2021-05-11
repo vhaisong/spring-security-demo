@@ -21,22 +21,22 @@ public class VerifyCodeFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws ServletException, IOException {
-        if ("POST".equalsIgnoreCase(req.getMethod())) {
-            System.out.println(req.getServletPath());
-            String code = req.getParameter("code");
-            String sessionCode = req.getSession().getAttribute("code") + "";
-            if (code == null || "".equals(code)) {
-                resp.setStatus(500);
-                resp.setContentType("text/html;charset=utf-8");
-                resp.getWriter().print("验证码不能为空");
-                return;
-            } else if (!code.equals(sessionCode)) {
-                resp.setStatus(500);
-                resp.setContentType("text/html;charset=utf-8");
-                resp.getWriter().print("验证码错误");
-                return;
-            }
-        }
+//        if ("POST".equalsIgnoreCase(req.getMethod())) {
+//            System.out.println(req.getServletPath());
+//            String code = req.getParameter("code");
+//            String sessionCode = req.getSession().getAttribute("code") + "";
+//            if (code == null || "".equals(code)) {
+//                resp.setStatus(500);
+//                resp.setContentType("text/html;charset=utf-8");
+//                resp.getWriter().print("验证码不能为空");
+//                return;
+//            } else if (!code.equals(sessionCode)) {
+//                resp.setStatus(500);
+//                resp.setContentType("text/html;charset=utf-8");
+//                resp.getWriter().print("验证码错误");
+//                return;
+//            }
+//        }
         chain.doFilter(req, resp);
     }
 }
