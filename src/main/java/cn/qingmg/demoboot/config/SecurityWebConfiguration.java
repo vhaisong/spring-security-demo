@@ -51,35 +51,39 @@ public class SecurityWebConfiguration extends WebSecurityConfigurerAdapter {
 //        ;
 //    }
 
+    @Autowired
+    private MyWebAuthenticationDetailsSource authenticationDetailsSource;
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // 配置在校验账号密码前先校验验证码
         http.addFilterBefore(verifyCodeFilter, UsernamePasswordAuthenticationFilter.class);
         http
                 .authorizeRequests()
-                .antMatchers("/code", "/error").permitAll()
-                .antMatchers("/test/111").hasRole("test1")
-                .antMatchers("/test/222").hasRole("test2")
-                .antMatchers("/test/333").hasAuthority("ROLE_test3")
-                .antMatchers("/test/444").hasAuthority("ROLE_test4")
-                .anyRequest().authenticated()
-                .and()
+                    .antMatchers("/code", "/error").permitAll()
+                    .antMatchers("/test/111").hasRole("test1")
+                    .antMatchers("/test/222").hasRole("test2")
+                    .antMatchers("/test/333").hasAuthority("ROLE_test3")
+                    .antMatchers("/test/444").hasAuthority("ROLE_test4")
+                    .anyRequest().authenticated()
+                    .and()
                 .formLogin()
-                // 配置登陆页面，并放行
-                .loginPage("/login").permitAll()
-                // 配置登陆失败返回
-                .failureHandler((req, resp, e) -> {
-                    resp.setStatus(500);
-                    resp.setContentType("text/html;charset=utf-8");
-                    resp.getWriter().print(e.getMessage());
-                })
-                .and()
+                    // 配置登陆页面，并放行
+                    .loginPage("/login").permitAll()
+                    // 配置登陆失败返回
+                    .failureHandler((req, resp, e) -> {
+                        resp.setStatus(500);
+                        resp.setContentType("text/html;charset=utf-8");
+                        resp.getWriter().print(e.getMessage());
+                    })
+                    .authenticationDetailsSource(authenticationDetailsSource)
+                    .and()
                 .rememberMe()
 //                    .rememberMeParameter("rme")
 //                    .rememberMeCookieName("rmec")
-                .tokenValiditySeconds(24 * 60 * 60)
+                    .tokenValiditySeconds(24 * 60 * 60)
 //                    .tokenRepository(jdbcTokenRepository())
-                .and()
+                    .and()
                 // 禁用 csrf
                 .csrf().disable()
         ;
